@@ -58,8 +58,7 @@ async def homepage(request):
 @app.route('/analyze', methods=['POST'])
 async def analyze(request):
     img_data = await request.form()
-    img_str = await (img_data['file'])
-    imgdata = base64.b64decode(img_str)
+    imgdata = base64.b64decode(img_data['file'])
     filename = 'some_image.jpg'  # I assume you have a way of picking unique filenames
     with open(filename, 'wb') as f:
         f.write(imgdata)    
