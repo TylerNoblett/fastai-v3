@@ -61,21 +61,10 @@ async def analyze(request):
     img_bytes = await (img_data['file'].read())
     img = open_image(BytesIO(img_bytes))
     prediction = learn.predict(img)[0]
-    return JSONResponse({'result': str(prediction)})
-"""
-@app.route('/analyze', methods=['POST'])
-async def analyze(request):
-    img_data = await request.form()
-
-    with open("imageToSave.png", "wb") as fh:
-        fh.write(base64.b64decode(img_data['file']))
- 
-    img = open_image("imageToSave.png")
-    prediction = learn.predict(img)[0]
-    result = f'result: ${str(prediction)}'
-    print(result)
-    return JSONResponse({result})
-"""
+    return JSONResponse({
+        'location': str(prediction),
+        'details': 'some other text'
+    })
 
 if __name__ == '__main__':
     if 'serve' in sys.argv:
