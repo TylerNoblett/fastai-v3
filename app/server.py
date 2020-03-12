@@ -10,10 +10,10 @@ from starlette.middleware.cors import CORSMiddleware
 from starlette.responses import HTMLResponse, JSONResponse
 from starlette.staticfiles import StaticFiles
 
-export_file_url = 'https://www.dropbox.com/s/npeu1o3147ddql2/export.pkl?dl=1'
+export_file_url = 'https://www.dropbox.com/s/6q328103p4nzijc/office.pkl?dl=1'
 export_file_name = 'export.pkl'
 
-classes = ['whitehouse', 'capitol', 'lincoln', 'jefferson', 'washington']
+classes = ['pen', 'chair', 'computer', 'desk']
 path = Path(__file__).parent
 
 app = Starlette()
@@ -62,7 +62,7 @@ async def analyze(request):
     img = open_image(BytesIO(img_bytes))
     prediction = learn.predict(img)[0]
     return JSONResponse({
-        'location': str(prediction).capitalize(),
+        'object': str(prediction).capitalize(),
         'details': 'some other text'
     })
 
