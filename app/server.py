@@ -13,7 +13,7 @@ from starlette.staticfiles import StaticFiles
 export_file_url = 'https://www.dropbox.com/s/8dtnca7engl8ck4/baylor.pkl?dl=1'
 export_file_name = 'export.pkl'
 
-classes = ['pen', 'chair', 'computer', 'desk']
+classes = ['pen', 'chair', 'computer', 'desk', 'person', 'car', 'tree']
 path = Path(__file__).parent
 
 app = Starlette()
@@ -61,9 +61,18 @@ async def analyze(request):
     img_bytes = await (img_data['file'].read())
     img = open_image(BytesIO(img_bytes))
     prediction = learn.predict(img)[0]
+    items = {
+        'tree': 'trees are great', 
+        'person': 'if you are reading this, you too are a person', 
+        'car': 'helps us get around',
+        'computer': 'objects we use a lot',
+        'pen': 'write something down!',
+        'desk': 'we need these to work',
+        'chair': 'perfect for sitting'
+    }
     return JSONResponse({
         'object': str(prediction).capitalize(),
-        'details': 'some other text'
+        'details': items[prediction]
     })
 
 if __name__ == '__main__':
