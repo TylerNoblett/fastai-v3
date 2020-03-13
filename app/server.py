@@ -10,7 +10,7 @@ from starlette.middleware.cors import CORSMiddleware
 from starlette.responses import HTMLResponse, JSONResponse
 from starlette.staticfiles import StaticFiles
 
-export_file_url = 'https://www.dropbox.com/s/6q328103p4nzijc/office.pkl?dl=1'
+export_file_url = 'https://www.dropbox.com/s/8dtnca7engl8ck4/baylor.pkl?dl=1'
 export_file_name = 'export.pkl'
 
 classes = ['pen', 'chair', 'computer', 'desk']
