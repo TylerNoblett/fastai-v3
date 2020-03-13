@@ -17,7 +17,7 @@ classes = ['pen', 'chair', 'computer', 'desk', 'person', 'car', 'tree']
 path = Path(__file__).parent
 
 app = Starlette()
-app.add_middleware(CORSMiddleware, allow_origins=['*']), allow_headers=['*'], allow_methods=['GET', 'POST'])
+app.add_middleware(CORSMiddleware, allow_origins=['*'], allow_headers=['*'], allow_methods=['GET', 'POST'])
 app.mount('/static', StaticFiles(directory='app/static'))
 
 
