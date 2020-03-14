@@ -55,6 +55,14 @@ async def homepage(request):
     html_file = path / 'view' / 'index.html'
     return HTMLResponse(html_file.open().read())
 
+@app.route('/healthcheck')
+async def healthcheck(request):
+    return JSONResponse({'msg': "Hello World"})
+
+@app.route('/healthcheck', methods=['POST'])
+async def healthcheck(request):
+    return JSONResponse({'msg': "Hello World from POST"})
+
 @app.route('/analyze', methods=['POST'])
 async def analyze(request):
     img_data = await request.form()
