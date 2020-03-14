@@ -78,9 +78,11 @@ async def analyze(request):
         'desk': 'we need these to work',
         'chair': 'perfect for sitting'
     }
+    # print("items[prediction]", items[prediction])
     return JSONResponse({
         'object': str(prediction).capitalize(),
-        'details': items[prediction]
+        'details': 'details about the item'
+        #'details': items[prediction]
     })
 
 if __name__ == '__main__':
