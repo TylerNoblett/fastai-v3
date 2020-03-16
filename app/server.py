@@ -69,20 +69,21 @@ async def analyze(request):
     img_bytes = await (img_data['file'].read())
     img = open_image(BytesIO(img_bytes))
     prediction = learn.predict(img)[0]
+    prediction = str(prediction).capitalize()
     items = {
-        'tree': 'trees are great', 
-        'person': 'if you are reading this, you too are a person', 
-        'car': 'helps us get around',
-        'computer': 'objects we use a lot',
-        'pen': 'write something down!',
-        'desk': 'we need these to work',
-        'chair': 'perfect for sitting'
+        'Tree': 'Trees are great!', 
+        'Person': 'If you are reading this, you too are a person', 
+        'Car': '4 wheels is all you need',
+        'Computer': 'A very useful tool',
+        'Pen': 'Useful for writing something down!',
+        'Desk': 'The perfect place to put your things',
+        'Chair': 'Ideal for sitting'
     }
-    # print("items[prediction]", items[prediction])
+
     return JSONResponse({
-        'object': str(prediction).capitalize(),
-        'details': 'details about the item'
-        #'details': items[prediction]
+        'object': prediction,
+        # 'details': 'details about the item'
+        'details': items[prediction]
     })
 
 if __name__ == '__main__':
