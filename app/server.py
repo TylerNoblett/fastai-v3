@@ -81,9 +81,8 @@ async def analyze(request):
     }
 
     return JSONResponse({
-        'object': prediction,
-        # 'details': 'details about the item'
-        'details': items[prediction]
+        'type': prediction,
+        'content': items[prediction]
     })
 
 if __name__ == '__main__':
