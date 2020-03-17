@@ -1,6 +1,5 @@
 import aiohttp
 import asyncio
-import base64
 import uvicorn
 from fastai import *
 from fastai.vision import *
@@ -17,7 +16,6 @@ classes = ['pen', 'chair', 'computer', 'desk', 'person', 'car', 'tree']
 path = Path(__file__).parent
 
 app = Starlette()
-#app.add_middleware(CORSMiddleware, allow_origins=['*'], allow_headers=['*'], allow_methods=['GET', 'POST'])
 app.add_middleware(CORSMiddleware, allow_origins=['*'], allow_headers=['X-Requested-With', 'Content-Type'])
 app.mount('/static', StaticFiles(directory='app/static'))
 
@@ -56,14 +54,6 @@ async def homepage(request):
     html_file = path / 'view' / 'index.html'
     return HTMLResponse(html_file.open().read())
 
-@app.route('/healthcheck')
-async def healthcheck(request):
-    return JSONResponse({'msg': "Hello World"})
-
-@app.route('/healthcheck', methods=['POST'])
-async def healthcheck(request):
-    return JSONResponse({'msg': "Hello World from POST"})
-
 @app.route('/analyze', methods=['POST'])
 async def analyze(request):
     img_data = await request.form()
@@ -82,7 +72,7 @@ async def analyze(request):
     }
 
     return JSONResponse({
-        'type': prediction,
+        'result': prediction,
         'content': items[prediction]
     })
 
