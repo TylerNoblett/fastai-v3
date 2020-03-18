@@ -16,7 +16,7 @@ classes = ['pen', 'chair', 'computer', 'desk', 'person', 'car', 'tree']
 path = Path(__file__).parent
 
 app = Starlette()
-app.add_middleware(CORSMiddleware, allow_origins=['https://tylernoblett.github.io/fastai-cnn-camera-app/'], allow_headers=['X-Requested-With', 'Content-Type'])
+app.add_middleware(CORSMiddleware, allow_origins=['https://tylernoblett.github.io'], allow_headers=['X-Requested-With', 'Content-Type'])
 app.mount('/static', StaticFiles(directory='app/static'))
 
 
