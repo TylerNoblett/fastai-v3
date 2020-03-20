@@ -6,7 +6,7 @@ from fastai.vision import *
 from io import BytesIO
 from starlette.applications import Starlette
 from starlette.middleware.cors import CORSMiddleware
-from starlette.responses import HTMLResponse, JSONResponse
+from starlette.responses import HTMLResponse, JSONResponse, FileResponse
 from starlette.staticfiles import StaticFiles
 
 export_file_url = 'https://www.dropbox.com/s/8dtnca7engl8ck4/baylor.pkl?dl=1'
