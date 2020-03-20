@@ -80,7 +80,7 @@ async def analyze(request):
 async def get_yaml(request):
     dirname = os.path.abspath(os.path.join(os.path.dirname(os.path.realpath(__file__))))
     print('DIRNAME', dirname)
-    return FileResponse(f"{dirname}/robots.txt")
+    return FileResponse(f"{dirname}/static/robots.txt")
 
 if __name__ == '__main__':
     if 'serve' in sys.argv:
