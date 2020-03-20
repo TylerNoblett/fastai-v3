@@ -76,6 +76,15 @@ async def analyze(request):
         'content': items[prediction]
     })
 
+from flask import Flask, request, send_from_directory
+app = Flask(__name__, static_folder='static')    
+
+@app.route('/robots.txt')
+async def get_yaml(request):
+    dirname = os.path.abspath(os.path.join(os.path.dirname(os.path.realpath(__file__))))
+    print('DIRNAME', dirname)
+    return FileResponse(f"{dirname}/robots.txt")
+
 if __name__ == '__main__':
     if 'serve' in sys.argv:
         uvicorn.run(app=app, host='0.0.0.0', port=5000, log_level="info")
