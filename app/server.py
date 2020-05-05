@@ -17,7 +17,7 @@ export_file_url_music = 'https://www.dropbox.com/s/7qyc0tjbifjd0qk/music.pkl?dl=
 export_file_name_music = 'music.pkl'
 
 vision_learner = None
-lyric_learner = None
+lyrics_learner = None
 music_learner = None
 
 classes = ['pen', 'chair', 'computer', 'desk', 'person', 'car', 'tree']
