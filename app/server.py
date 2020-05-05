@@ -92,7 +92,7 @@ async def analyze(request):
 # TODO: add functions and endpoints for beatles
 @app.route('/lyrics')
 async def return_lyrics(request):
-    chorus_lyrics = "".join(lyric_learner.predict("love", 20, temperature=0.75))
+    chorus_lyrics = "".join(lyrics_learner.predict("love", 20, temperature=0.75))
     return JSONResponse({
         'lyrics': chorus_lyrics,
     })
