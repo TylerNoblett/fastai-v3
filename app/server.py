@@ -8,9 +8,17 @@ from starlette.applications import Starlette
 from starlette.middleware.cors import CORSMiddleware
 from starlette.responses import HTMLResponse, JSONResponse, FileResponse
 from starlette.staticfiles import StaticFiles
+export_file_url_vision = 'https://www.dropbox.com/s/8dtnca7engl8ck4/baylor.pkl?dl=1'
+export_file_name_vision = 'export.pkl'
+# TODO: move dropbox links to other dropbox service
+export_file_url_lyrics = 'https://www.dropbox.com/s/4rxcievdvkiv8e1/lyrics.pkl?dl=1'
+export_file_name_lyrics = 'lyrics.pkl'
+export_file_url_music = 'https://www.dropbox.com/s/7qyc0tjbifjd0qk/music.pkl?dl=1'
+export_file_name_music = 'music.pkl'
 
-export_file_url = 'https://www.dropbox.com/s/8dtnca7engl8ck4/baylor.pkl?dl=1'
-export_file_name = 'export.pkl'
+vision_learner = None
+lyric_learner = None
+music_learner = None
 
 classes = ['pen', 'chair', 'computer', 'desk', 'person', 'car', 'tree']
 path = Path(__file__).parent
@@ -29,11 +37,11 @@ async def download_file(url, dest):
                 f.write(data)
 
 
-async def setup_learner():
+async def setup_learner(export_file_url, export_file_name, learner_name):
     await download_file(export_file_url, path / export_file_name)
     try:
-        learn = load_learner(path, export_file_name)
-        return learn
+        learner_name = load_learner(path, export_file_name)
+        return learner_name
     except RuntimeError as e:
         if len(e.args) > 0 and 'CPU-only machine' in e.args[0]:
             print(e)
@@ -44,7 +52,13 @@ async def setup_learner():
 
 
 loop = asyncio.get_event_loop()
-tasks = [asyncio.ensure_future(setup_learner())]
+
+tasks = [
+    asyncio.ensure_future(setup_learner(export_file_url_vision, export_file_name_vision, vision_learner)),
+    asyncio.ensure_future(setup_learner(export_file_url_lyrics, export_file_name_lyrics, lyrics_learner)),
+    asyncio.ensure_future(setup_learner(export_file_url_music, export_file_name_music, vision_music)),
+]
+# TODO: remove this [0]?
 learn = loop.run_until_complete(asyncio.gather(*tasks))[0]
 loop.close()
 
@@ -59,7 +73,7 @@ async def analyze(request):
     img_data = await request.form()
     img_bytes = await (img_data['file'].read())
     img = open_image(BytesIO(img_bytes))
-    prediction = learn.predict(img)[0]
+    prediction = vision_learner.predict(img)[0]
     prediction = str(prediction).capitalize()
     items = {
         'Tree': 'Trees are great!', 
@@ -74,6 +88,14 @@ async def analyze(request):
     return JSONResponse({
         'result': prediction,
         'content': items[prediction]
+    })
+
+# TODO: add functions and endpoints for beatles
+@app.route('/lyrics')
+async def return_lyrics(request):
+    chorus_lyrics = "".join(lyric_learner.predict("love", 20, temperature=0.75))
+    return JSONResponse({
+        'lyrics': chorus_lyrics,
     })
 
 @app.route('/robots.txt')
