@@ -58,8 +58,7 @@ tasks = [
     asyncio.ensure_future(setup_learner(export_file_url_lyrics, export_file_name_lyrics, lyrics_learner)),
     asyncio.ensure_future(setup_learner(export_file_url_music, export_file_name_music, music_learner)),
 ]
-# TODO: remove this [0]?
-learn = loop.run_until_complete(asyncio.gather(*tasks))[0]
+vision_learner, lyrics_learner, music_learner = loop.run_until_complete(asyncio.gather(*tasks))
 loop.close()
 
 
