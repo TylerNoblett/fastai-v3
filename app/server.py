@@ -100,58 +100,54 @@ async def return_lyrics(request):
 #     verse_words = [x.lower() for x in verse_words]
 #     chorus_words = [x.lower() for x in chorus_words]
     
-    # TODO: replace this with a function
     # grab random word from possible vals
     verse_start = random.choice(verse_words)
     verse2_start = random.choice(verse_words)
     chorus_start = random.choice(chorus_words)
     bridge_start = random.choice(bridge_words)
     
-    # TODO: replace this with a function
-    # TODO: Should I carefully select number of words?
-    # great lyrics for each section
-    chorus_lyrics = "".join(learn_lyrics.predict(chorus_start, 50, temperature=0.75))
-    verse_lyrics = "".join(learn_lyrics.predict(verse_start, 50, temperature=0.75))
-    verse2_lyrics = "".join(learn_lyrics.predict(verse2_start, 50, temperature=0.75))
-    bridge_lyrics = "".join(learn_lyrics.predict(bridge_start, 50, temperature=0.75))
+    # create lyrics
+    def create_lyrics(song_section):
+        return "".join(lyrics_learner.predict(song_section, 50, temperature=0.75))
+
+    chorus_lyrics = create_lyrics(chorus_start)
+    verse_lyrics = create_lyrics(verse_start)
+    verse2_lyrics = create_lyrics(verse2_start)
+    bridge_lyrics = create_lyrics(bridge_start)
     
     def remove_stray_quote_marks(string):
         new_string = string.replace("'", '')
         return new_string.replace('"', '')
     
-    # TODO: replace this with a function
     # remove quote marks that don't have a partner
     cleaned_chorus_lyrics = remove_stray_quote_marks(chorus_lyrics)
     cleaned_verse_lyrics = remove_stray_quote_marks(verse_lyrics)
     cleaned_verse2_lyrics = remove_stray_quote_marks(verse2_lyrics)
     cleaned_bridge_lyrics = remove_stray_quote_marks(bridge_lyrics)
     
-    # TODO: replace this with a function
     # split the lyric string into an array
     chorus_lyrics_split = shlex.split(cleaned_chorus_lyrics)
     verse_lyrics_split = shlex.split(cleaned_verse_lyrics)
     verse2_lyrics_split = shlex.split(cleaned_verse2_lyrics)
     bridge_lyrics_split = shlex.split(cleaned_bridge_lyrics)
     
-    # TODO: replace this with a function
-    # randomly generate a key
-    keys = ['a', 'b', 'c', 'd', 'e', 'f', 'g']
-    key_weights = [4 / 22, 1 / 22, 3 / 22, 2 / 22, 1 / 22, 2 / 22, 9 / 22 ]
-    key = random.choices(
-             population=keys,
-             weights=key_weights,
-             k=1)
-    key = key[0]
+    def pick_key():
+        keys = ['a', 'b', 'c', 'd', 'e', 'f', 'g']
+        key_weights = [4 / 22, 1 / 22, 3 / 22, 2 / 22, 1 / 22, 2 / 22, 9 / 22 ]
+        key = random.choices(
+                 population=keys,
+                 weights=key_weights,
+                 k=1)
+        return key[0]    
     
-    # TODO: replace this with a function
-    # randomly generate a tempo
-    tempos = [138, 98, 120, 102, 125, 65, 72, 112, 150, 165, 108, 138, 70, 78, 94, 99, 123, 138, 138, 137, 171, 100]
-    tempo = random.choice(tempos)
+    def pick_tempo():
+        tempos = [138, 98, 120, 102, 125, 65, 72, 112, 150, 165, 108, 138, 70, 78, 94, 99, 123, 138, 138, 137, 171, 100]
+        return random.choice(tempos)    
     
     # create the response object
     response_obj = {
-        'tempo': tempo,
-        'key': key,
+        'tempo': pick_tempo(),
+        'key': pick_key(),
         'verse_one': [],
         'verse_two': [],
         'verse_three': [],
@@ -216,18 +212,19 @@ async def return_lyrics(request):
         return mod_piece_list
     
     # Create 'music'
-    V = 'xxverse'
-    C = 'xxchorus'
-    B = 'xxbridge'
-    chars_in_group = 10
-    V_WORDS = 32 * chars_in_group
-    C_WORDS = 23 * chars_in_group
-    B_WORDS = 15 * chars_in_group
+    verse_start = 'xxverse'
+    chorus_start = 'xxchorus'
+    bridge_start = 'xxbridge'
+    verse_chars = 500
+    chorus_chars = 500
+    bridge_chars = 500
 
-    # TODO: replace this with a function
-    verse_str = clean_line("".join(learn.predict(V, V_WORDS, temperature=0.75)))
-    chorus_str = clean_line("".join(learn.predict(C, C_WORDS, temperature=0.75)))
-    bridge_str = clean_line("".join(learn.predict(B, B_WORDS, temperature=0.75)))
+    def create_music(section_start, section_characters):
+        clean_line("".join(music_learner.predict(section_start, section_characters, temperature=0.75)))
+
+    verse_str = create_music(verse_start, verse_chars)
+    chorus_str = create_music(chorus_start, chorus_chars)
+    verse_str = create_music(bridge_start, bridge_chars)
     
     # TODO: replace this with a function
     verse = simplify_chords('['+ verse_str + ']')
@@ -242,16 +239,10 @@ async def return_lyrics(request):
                 grouping[1] = new_part_of_song_lyrics[i]
         return new_part_of_song
     
-    # TODO: replace this with a function
-    verse_1_complete = replace_w_with_word(verse, verse_lyrics_split)
-    verse_2_complete = replace_w_with_word(verse, verse2_lyrics_split)
-    chorus_complete = replace_w_with_word(chorus, chorus_lyrics_split)
-    bridge_complete = replace_w_with_word(bridge, bridge_lyrics_split)
-    
-    response_obj['verse_one'] = verse_1_complete
-    response_obj['verse_two'] = verse_2_complete
-    response_obj['chorus'] = chorus_complete
-    response_obj['bridge'] = bridge_complete
+    response_obj['verse_one'] = replace_w_with_word(verse, verse_lyrics_split)
+    response_obj['verse_two'] = replace_w_with_word(verse, verse2_lyrics_split)
+    response_obj['chorus'] = replace_w_with_word(chorus, chorus_lyrics_split)
+    response_obj['bridge'] = replace_w_with_word(bridge, bridge_lyrics_split)
 
     return JSONResponse(response_obj)
 
