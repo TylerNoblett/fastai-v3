@@ -2,7 +2,7 @@ import aiohttp
 import asyncio
 import uvicorn
 import random
-import schlex
+import shlex
 from fastai import *
 from fastai.vision import *
 from io import BytesIO
