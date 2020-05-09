@@ -193,6 +193,8 @@ async def return_song(request):
                 'vimin': 'vi',
                 'vimin7': 'vi7',
                 'vimin / vmaj': 'vi/V',
+                'vimaj': 'VI',
+                'vimaj7': 'VI7',
                 'bviimaj': 'VII',
                 'xxbridge': 'I',
                 'w': 'IV',
