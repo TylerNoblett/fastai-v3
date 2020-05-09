@@ -225,7 +225,7 @@ async def return_lyrics(request):
 
     verse_str = create_music(verse_start, verse_chars)
     chorus_str = create_music(chorus_start, chorus_chars)
-    verse_str = create_music(bridge_start, bridge_chars)
+    bridge_str = create_music(bridge_start, bridge_chars)
     
     # TODO: replace this with a function
     verse = simplify_chords('['+ verse_str + ']')
