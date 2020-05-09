@@ -196,7 +196,9 @@ async def return_song(request):
                 'vimaj': 'VI',
                 'vimaj7': 'VI7',
                 'bviimaj': 'VII',
-                'xxbridge': 'I',
+                'xxbridge': 'V',
+                'xxchorus': 'IV',
+                'xxverse': 'I',
                 'w': 'IV',
                 'n': 'V',
                 'c': 'iv'
