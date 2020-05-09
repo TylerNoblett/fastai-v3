@@ -166,7 +166,10 @@ async def return_song(request):
 
         # takes a chord and makes it more human readable
         def make_chords_readable(chord):
-            lower_chord = chord.lower().strip()
+            try:
+                lower_chord = chord.lower().strip()
+            except AttributeError:
+                lower_chord = 'imaj'
             chord_list = {
                 'isus': 'Isus',
                 'i6': 'I6',
@@ -203,7 +206,10 @@ async def return_song(request):
                 'n': 'V',
                 'c': 'iv'
             }
-            return chord_list[lower_chord]
+            try:
+                return chord_list[lower_chord]
+            except KeyError:
+                return 'I'
 
         # TODO: what does this do?
         def simplify_chords(piece_str):
