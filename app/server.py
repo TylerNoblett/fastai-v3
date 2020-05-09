@@ -92,160 +92,175 @@ async def analyze(request):
     })
 
 # TODO: add functions and endpoints for beatles
-@app.route('/lyrics')
-async def return_lyrics(request):
-    bridge_words = ["Love", "Can\'t", "Day", "Eight", "ah", "When", "Help", "Nah", "I\'m", "That", "And", "She", "Because", "Yeah", "you\'re", "I", "Life"]
-    verse_words = ["There\'s", "Something", "Nothing", "Can\'t", "Ooh", "Saw", "Here", "He", "Got", "She", "Tried", "Love", "Eleanor", "Father", "Jo", "Sweet", "It\'s", "you", "you", "I", "When", "Now", "Hey", "baby\'s", "baby", "Oh", "Yeah", "Lady", "When", "And", "For", "I", "Love", "Dear", "It\'s", "If", "In", "On", "Behind", "You", "I", "She", "Try", "Think", "In", "And", "So", "yesterday", "As", "Suddenly", "yesterday"]
-    chorus_words = ["all", "We", "Why", "Penny", "We", "She", "I", "She\'s", "Don\'t", "We","Paperback", "She", "Let", "Someone", "Can\'t", "hold", "Come", "All", "She", "Get", "Oh", "When", "Hello", "You", "I", "Help", "And", "So", "I\'m", "She\'s", "I", "Tuesday", "See", "Friday"]
-#     bridge_words = [x.lower() for x in bridge_words]       
-#     verse_words = [x.lower() for x in verse_words]
-#     chorus_words = [x.lower() for x in chorus_words]
-    
-    # grab random word from possible vals
-    verse_start = random.choice(verse_words)
-    verse2_start = random.choice(verse_words)
-    chorus_start = random.choice(chorus_words)
-    bridge_start = random.choice(bridge_words)
-    
-    # create lyrics
-    def create_lyrics(song_section):
-        return "".join(lyrics_learner.predict(song_section, 50, temperature=0.75))
+@app.route('/new-song')
+async def return_song(request):
+    def create_song(request):
+        bridge_words = ["Love", "Can\'t", "Day", "Eight", "ah", "When", "Help", "Nah", "I\'m", "That", "And", "She", "Because", "Yeah", "you\'re", "I", "Life"]
+        verse_words = ["There\'s", "Something", "Nothing", "Can\'t", "Ooh", "Saw", "Here", "He", "Got", "She", "Tried", "Love", "Eleanor", "Father", "Jo", "Sweet", "It\'s", "you", "you", "I", "When", "Now", "Hey", "baby\'s", "baby", "Oh", "Yeah", "Lady", "When", "And", "For", "I", "Love", "Dear", "It\'s", "If", "In", "On", "Behind", "You", "I", "She", "Try", "Think", "In", "And", "So", "yesterday", "As", "Suddenly", "yesterday"]
+        chorus_words = ["all", "We", "Why", "Penny", "We", "She", "I", "She\'s", "Don\'t", "We","Paperback", "She", "Let", "Someone", "Can\'t", "hold", "Come", "All", "She", "Get", "Oh", "When", "Hello", "You", "I", "Help", "And", "So", "I\'m", "She\'s", "I", "Tuesday", "See", "Friday"]
+    #     bridge_words = [x.lower() for x in bridge_words]       
+    #     verse_words = [x.lower() for x in verse_words]
+    #     chorus_words = [x.lower() for x in chorus_words]
 
-    chorus_lyrics = create_lyrics(chorus_start)
-    verse_lyrics = create_lyrics(verse_start)
-    verse2_lyrics = create_lyrics(verse2_start)
-    bridge_lyrics = create_lyrics(bridge_start)
-    
-    def remove_stray_quote_marks(string):
-        new_string = string.replace("'", '')
-        return new_string.replace('"', '')
-    
-    # remove quote marks that don't have a partner
-    cleaned_chorus_lyrics = remove_stray_quote_marks(chorus_lyrics)
-    cleaned_verse_lyrics = remove_stray_quote_marks(verse_lyrics)
-    cleaned_verse2_lyrics = remove_stray_quote_marks(verse2_lyrics)
-    cleaned_bridge_lyrics = remove_stray_quote_marks(bridge_lyrics)
-    
-    # split the lyric string into an array
-    chorus_lyrics_split = shlex.split(cleaned_chorus_lyrics)
-    verse_lyrics_split = shlex.split(cleaned_verse_lyrics)
-    verse2_lyrics_split = shlex.split(cleaned_verse2_lyrics)
-    bridge_lyrics_split = shlex.split(cleaned_bridge_lyrics)
-    
-    def pick_key():
-        keys = ['a', 'b', 'c', 'd', 'e', 'f', 'g']
-        key_weights = [4 / 22, 1 / 22, 3 / 22, 2 / 22, 1 / 22, 2 / 22, 9 / 22 ]
-        key = random.choices(
-                 population=keys,
-                 weights=key_weights,
-                 k=1)
-        return key[0]    
-    
-    def pick_tempo():
-        tempos = [138, 98, 120, 102, 125, 65, 72, 112, 150, 165, 108, 138, 70, 78, 94, 99, 123, 138, 138, 137, 171, 100]
-        return random.choice(tempos)    
-    
-    # create the response object
-    response_obj = {
-        'tempo': pick_tempo(),
-        'key': pick_key(),
-        'verse_one': [],
-        'verse_two': [],
-        'verse_three': [],
-        'chorus': [],
-        'bridge': []
-    }
-    
-    # takes a song section and makes it into a list (if it's not)
-    def clean_line(line):
-        start = line.find('[')
-        clean_start = line[start:]
-        clean_end = ']'.join(clean_start.split(']')[:-1]) + ']'
-        return clean_end
+        # grab random word from possible vals
+        verse_start = random.choice(verse_words)
+        verse2_start = random.choice(verse_words)
+        chorus_start = random.choice(chorus_words)
+        bridge_start = random.choice(bridge_words)
 
-    # takes a chord and makes it more human readable
-    def make_chords_readable(chord):
-        lower_chord = chord.lower().strip()
-        chord_list = {
-            'isus': 'Isus',
-            'i6': 'I6',
-            'imaj': 'I',
-            'imaj7': 'I7',
-            'imaj / viidim': 'I/vii',
-            'imin': 'i',
-            'iimaj': 'II',
-            'iimaj7': 'II7',
-            'iimin': 'ii',
-            'iimin7': 'ii7',
-            'biiimaj': 'bIII',
-            'iiimin': 'iii',
-            'iiimin7': 'iii7',
-            'iiimaj': 'III',
-            'iiimaj7': 'III7',
-            'ivmaj': 'IV',
-            'ivmaj7': 'IV7',
-            'ivmaj / vmaj': 'IV/V',
-            'ivmin': 'iv',
-            'vmaj': 'V',
-            'vmaj7': 'V7',
-            'bvimaj': 'bVI',
-            'vimin': 'vi',
-            'vimin7': 'vi7',
-            'vimin / vmaj': 'vi/V',
-            'bviimaj': 'VII',
-            'xxbridge': 'I',
-            'w': 'IV',
-            'n': 'V',
-            'c': 'iv'
+        # create lyrics
+        def create_lyrics(song_section):
+            return "".join(lyrics_learner.predict(song_section, 50, temperature=0.75))
+
+        chorus_lyrics = create_lyrics(chorus_start)
+        verse_lyrics = create_lyrics(verse_start)
+        verse2_lyrics = create_lyrics(verse2_start)
+        bridge_lyrics = create_lyrics(bridge_start)
+
+        def remove_stray_quote_marks(string):
+            new_string = string.replace("'", '')
+            return new_string.replace('"', '')
+
+        # remove quote marks that don't have a partner
+        cleaned_chorus_lyrics = remove_stray_quote_marks(chorus_lyrics)
+        cleaned_verse_lyrics = remove_stray_quote_marks(verse_lyrics)
+        cleaned_verse2_lyrics = remove_stray_quote_marks(verse2_lyrics)
+        cleaned_bridge_lyrics = remove_stray_quote_marks(bridge_lyrics)
+
+        # split the lyric string into an array
+        chorus_lyrics_split = shlex.split(cleaned_chorus_lyrics)
+        verse_lyrics_split = shlex.split(cleaned_verse_lyrics)
+        verse2_lyrics_split = shlex.split(cleaned_verse2_lyrics)
+        bridge_lyrics_split = shlex.split(cleaned_bridge_lyrics)
+
+        def pick_key():
+            keys = ['a', 'b', 'c', 'd', 'e', 'f', 'g']
+            key_weights = [4 / 22, 1 / 22, 3 / 22, 2 / 22, 1 / 22, 2 / 22, 9 / 22 ]
+            key = random.choices(
+                     population=keys,
+                     weights=key_weights,
+                     k=1)
+            return key[0]    
+
+        def pick_tempo():
+            tempos = [138, 98, 120, 102, 125, 65, 72, 112, 150, 165, 108, 138, 70, 78, 94, 99, 123, 138, 138, 137, 171, 100]
+            return random.choice(tempos)    
+
+        # create the response object
+        response_obj = {
+            'tempo': pick_tempo(),
+            'key': pick_key(),
+            'verse_one': [],
+            'verse_two': [],
+            'verse_three': [],
+            'chorus': [],
+            'bridge': []
         }
-        return chord_list[lower_chord]
-    
-    # TODO: what does this do?
-    def simplify_chords(piece_str):
-        piece_list = json.loads(piece_str)
-        mod_piece_list = []
-        for i, piece in enumerate(piece_list):
-            chord = make_chords_readable(piece[0])
-            new_piece = []
-            new_piece.append(chord)
-            new_piece.extend([piece[1], piece[2], piece[3]])
-            mod_piece_list.append(new_piece)
-        return mod_piece_list
-    
-    # Create 'music'
-    verse_start = 'xxverse'
-    chorus_start = 'xxchorus'
-    bridge_start = 'xxbridge'
-    verse_chars = 500
-    chorus_chars = 500
-    bridge_chars = 500
 
-    def create_music(section_start, section_characters):
-        return clean_line("".join(music_learner.predict(section_start, section_characters, temperature=0.75)))
+        # takes a song section and makes it into a list (if it's not)
+        def clean_line(line):
+            start = line.find('[')
+            clean_start = line[start:]
+            clean_end = ']'.join(clean_start.split(']')[:-1]) + ']'
+            return clean_end
 
-    verse_str = create_music(verse_start, verse_chars)
-    chorus_str = create_music(chorus_start, chorus_chars)
-    bridge_str = create_music(bridge_start, bridge_chars)
+        # takes a chord and makes it more human readable
+        def make_chords_readable(chord):
+            lower_chord = chord.lower().strip()
+            chord_list = {
+                'isus': 'Isus',
+                'i6': 'I6',
+                'imaj': 'I',
+                'imaj7': 'I7',
+                'imaj / viidim': 'I/vii',
+                'imin': 'i',
+                'iimaj': 'II',
+                'iimaj7': 'II7',
+                'iimin': 'ii',
+                'iimin7': 'ii7',
+                'biiimaj': 'bIII',
+                'iiimin': 'iii',
+                'iiimin7': 'iii7',
+                'iiimaj': 'III',
+                'iiimaj7': 'III7',
+                'ivmaj': 'IV',
+                'ivmaj7': 'IV7',
+                'ivmaj / vmaj': 'IV/V',
+                'ivmin': 'iv',
+                'vmaj': 'V',
+                'vmaj7': 'V7',
+                'bvimaj': 'bVI',
+                'vimin': 'vi',
+                'vimin7': 'vi7',
+                'vimin / vmaj': 'vi/V',
+                'bviimaj': 'VII',
+                'xxbridge': 'I',
+                'w': 'IV',
+                'n': 'V',
+                'c': 'iv'
+            }
+            return chord_list[lower_chord]
+
+        # TODO: what does this do?
+        def simplify_chords(piece_str):
+            piece_list = json.loads(piece_str)
+            mod_piece_list = []
+            for i, piece in enumerate(piece_list):
+                chord = make_chords_readable(piece[0])
+                new_piece = []
+                new_piece.append(chord)
+                new_piece.extend([piece[1], piece[2], piece[3]])
+                mod_piece_list.append(new_piece)
+            return mod_piece_list
+
+        # Create 'music'
+        verse_start = 'xxverse'
+        chorus_start = 'xxchorus'
+        bridge_start = 'xxbridge'
+        verse_chars = 500
+        chorus_chars = 500
+        bridge_chars = 500
+
+        def create_music(section_start, section_characters):
+            return clean_line("".join(music_learner.predict(section_start, section_characters, temperature=0.75)))
+
+        verse_str = create_music(verse_start, verse_chars)
+        chorus_str = create_music(chorus_start, chorus_chars)
+        bridge_str = create_music(bridge_start, bridge_chars)
     
     # TODO: replace this with a function
-    verse = simplify_chords('['+ verse_str + ']')
-    chorus = simplify_chords('['+ chorus_str + ']')
-    bridge = simplify_chords('['+ bridge_str + ']')
-    
-    def replace_w_with_word(part_of_song, part_of_song_lyrics):
-        new_part_of_song = part_of_song
-        new_part_of_song_lyrics = part_of_song_lyrics
-        for i, grouping in enumerate(new_part_of_song):
-            if grouping[1] == ' w ':
-                grouping[1] = new_part_of_song_lyrics[i]
-        return new_part_of_song
-    
-    response_obj['verse_one'] = replace_w_with_word(verse, verse_lyrics_split)
-    response_obj['verse_two'] = replace_w_with_word(verse, verse2_lyrics_split)
-    response_obj['chorus'] = replace_w_with_word(chorus, chorus_lyrics_split)
-    response_obj['bridge'] = replace_w_with_word(bridge, bridge_lyrics_split)
+        verse = simplify_chords('['+ verse_str + ']')
+        chorus = simplify_chords('['+ chorus_str + ']')
+        bridge = simplify_chords('['+ bridge_str + ']')
 
-    return JSONResponse(response_obj)
+        def replace_w_with_word(part_of_song, part_of_song_lyrics):
+            new_part_of_song = part_of_song
+            new_part_of_song_lyrics = part_of_song_lyrics
+            for i, grouping in enumerate(new_part_of_song):
+                if grouping[1] == ' w ':
+                    grouping[1] = new_part_of_song_lyrics[i]
+            return new_part_of_song
+
+        response_obj['verse_one'] = replace_w_with_word(verse, verse_lyrics_split)
+        response_obj['verse_two'] = replace_w_with_word(verse, verse2_lyrics_split)
+        response_obj['chorus'] = replace_w_with_word(chorus, chorus_lyrics_split)
+        response_obj['bridge'] = replace_w_with_word(bridge, bridge_lyrics_split)
+
+        return JSONResponse(response_obj)
+    
+    try:
+        return create_song(request)
+    except JSONDecodeError:
+        try:
+            return create_song(request)
+        except JSONDecodeError:
+            try:
+                return create_song(request)
+            except JSONDecodeError:
+                try:
+                    return create_song(request)
+                except JSONDecodeError:
+                    return create_song(request)
 
 @app.route('/robots.txt')
 async def get_yaml(request):
