@@ -221,7 +221,7 @@ async def return_lyrics(request):
     bridge_chars = 500
 
     def create_music(section_start, section_characters):
-        clean_line("".join(music_learner.predict(section_start, section_characters, temperature=0.75)))
+        return clean_line("".join(music_learner.predict(section_start, section_characters, temperature=0.75)))
 
     verse_str = create_music(verse_start, verse_chars)
     chorus_str = create_music(chorus_start, chorus_chars)
