@@ -248,20 +248,14 @@ async def return_song(request):
 
         return JSONResponse(response_obj)
     
-    try:
-        return create_song(request)
-    except JSONDecodeError:
+    def error_handler(request):
         try:
             return create_song(request)
-        except JSONDecodeError:
-            try:
-                return create_song(request)
-            except JSONDecodeError:
-                try:
-                    return create_song(request)
-                except JSONDecodeError:
-                    return create_song(request)
+        except json.decoder.JSONDecodeError:
+            return error_handler(request)
 
+    return error_handler(request)
+        
 @app.route('/robots.txt')
 async def get_yaml(request):
     dirname = os.path.abspath(os.path.join(os.path.dirname(os.path.realpath(__file__))))
